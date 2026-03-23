@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pro Task Manager</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+:root{
+    /* ===== LIGHT THEME COLORS (Blue Palette) ===== */
+    --primary:#2e90fa;   /* main blue */
+    --secondary:#0e61ba; /* darker accent */
+    --bg-light:#e6f2ff;  /* very light blue background */
+    --card-light:#ffffff;
+    --text-light:#001832; /* dark navy text */
+
+    /* ===== DARK THEME COLORS (Blue Palette) ===== */
+    --bg-dark:#000c1a;       /* deep navy background */
+    --card-dark:#001631;     /* slightly lighter navy */
+    --text-dark:#c8e2ff;     /* light blue text */
+    --primary-dark:#2e90fa;  /* bright blue accent */
+    --secondary-dark:#6eb4ff;/* lighter blue accent */
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+    font-family:'Poppins',sans-serif;
+    background:var(--bg-light);
+    color:var(--text-light);
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    transition:background 0.3s,color 0.3s;
+}
+
+body.dark{
+    background:var(--bg-dark);
+    color:var(--text-dark);
+}
+
+/* ===== MAIN CONTAINER ===== */
+.container{
+    width:95%;
+    max-width:750px;
+    margin:30px auto;
+    background:var(--card-light);
+    padding:25px;
+    border-radius:20px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.1);
+    transition:background 0.3s;
+    display:flex;
+    flex-direction:column;
+    height:70vh;
+    position:relative;
+}
+
+body.dark .container{
+    background:var(--card-dark);
+}
+
+/* ===== HEADER ===== */
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.header h1{
+    font-size:26px;
+    font-weight:700;
+    color:var(--primary);
+}
+body.dark .header h1{
+    color:var(--primary-dark);
+}
+
+#themeBtn{
+    padding:8px 16px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:var(--primary);
+    color:white;
+    font-weight:500;
+    transition:transform 0.3s,opacity 0.3s;
+}
+#themeBtn:hover{transform:scale(1.05);opacity:0.9;}
+body.dark #themeBtn{
+    background:var(--primary-dark);
+}
+
+/* ===== SEARCH BAR ===== */
+.search-section{
+    margin-bottom:15px;
+}
+.search-section input{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:2px solid var(--primary);
+    outline:none;
+    font-size:15px;
+}
+.search-section input:focus{border-color:var(--secondary);}
+body.dark .search-section input{
+    border:2px solid var(--primary-dark);
+    background:#001631;
+    color:var(--text-dark);
+}
+body.dark .search-section input:focus{border-color:var(--secondary-dark);}
+
+/* ===== TASK BOX ===== */
+.task-box{
+    flex:1;
+    overflow-y:auto;
+    padding-right:10px;
+    margin-bottom:15px;
+}
+.task-box::-webkit-scrollbar{width:6px;}
+.task-box::-webkit-scrollbar-thumb{background:var(--primary);border-radius:10px;}
+body.dark .task-box::-webkit-scrollbar-thumb{background:var(--primary-dark);}
+
+/* ===== TASK ITEM ===== */
+li{
+    list-style:none;
+    background:#d6f1ff;
+    padding:12px 16px;
+    margin-bottom:10px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    animation:fadeIn 0.3s ease;
+    transition:background 0.3s,transform 0.2s;
+}
+li:hover{transform:scale(1.01);}
+body.dark li{background:#002552;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+li.done{opacity:0.6;text-decoration:line-through;}
+
+.task-left{display:flex;align-items:center;gap:12px;flex:1;}
+.task-left span{cursor:pointer;font-size:15px;}
+
+.task-buttons{display:flex;gap:8px;}
+.task-buttons button{
+    border:none;padding:6px 10px;border-radius:6px;cursor:pointer;
+    font-size:12px;font-weight:600;transition:0.3s;
+}
+.edit-btn{background:#ffc107;color:#222;}
+.edit-btn:hover{opacity:0.8;}
+.delete-btn{background:#dc3545;color:white;}
+.delete-btn:hover{opacity:0.8;}
+
+/* ===== FLOATING ADD BUTTON ===== */
+#addBtn{
+    position:absolute;
+    bottom:20px;
+    right:20px;
+    width:50px;
+    height:50px;
+    border:none;
+    border-radius:50%;
+    background:var(--secondary);
+    color:white;
+    font-size:28px;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+    transition:transform 0.3s;
+}
+#addBtn:hover{transform:scale(1.1);}
+body.dark #addBtn{
+    background:var(--secondary-dark);
+}
+
+footer{
+    text-align:center;
+    margin-top:auto;
+    padding:15px;
+    font-size:14px;
+    opacity:0.7;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+<h1>Daily Tasks</h1>
+<button id="themeBtn">Dark Mode</button>
+</div>
+
+<!-- Search Bar -->
+<div class="search-section">
+<input type="text" id="searchInput" placeholder="Search tasks...">
+</div>
+
+<!-- Scrollable Task Box -->
+<ul id="taskList" class="task-box"></ul>
+
+<!-- Floating Add Button -->
+<button id="addBtn">+</button>
+
+</div>
+
+<footer>© 2026 To-Do-List by Zuha Ishtiaq</footer>
+
+<script>
+const taskList=document.getElementById('taskList');
+const themeBtn=document.getElementById('themeBtn');
+const searchInput=document.getElementById('searchInput');
+const addBtn=document.getElementById('addBtn');
+
+let tasks=JSON.parse(localStorage.getItem('tasks'))||[];
+
+/* Theme Toggle */
+themeBtn.onclick=()=>{
+    document.body.classList.toggle('dark');
+    themeBtn.textContent=document.body.classList.contains('dark')?'Light Mode':'Dark Mode';
+};
+
+/* Render */
+function render(filter=""){
+    taskList.innerHTML='';
+    tasks.forEach((task,index)=>{
+        if(task.text.toLowerCase().includes(filter.toLowerCase())){
+            const li=document.createElement('li');
+            if(task.done) li.classList.add('done');
+            li.innerHTML=`
+            <div class="task-left">
+                <input type="checkbox" ${task.done?'checked':''} onclick="toggle(${index})">
+                <span onclick="edit(${index})">${task.text}</span>
+            </div>
+            <div class="task-buttons">
+                <button class="edit-btn" onclick="edit(${index})">Edit</button>
+                <button class="delete-btn" onclick="removeTask(${index})">Delete</button>
+            </div>`;
+            taskList.appendChild(li);
+        }
+    });
+}
+
+/* Add Task */
+function addTask(){
+    let text=prompt("Enter new task:");
+    if(text && text.trim()!==''){
+        tasks.push({text:text,done:false});
+        localStorage.setItem('tasks',JSON.stringify(tasks));
+        render(searchInput.value);
+    }
+}
+addBtn.onclick=addTask;
+
+/* Search Filter */
+searchInput.addEventListener("input",()=>render(searchInput.value));
+
+/* Delete */
+function removeTask(i){
+    tasks.splice(i,1);
+    localStorage.setItem('tasks',JSON.stringify(tasks));
+    render(searchInput.value);
+}
+
+/* Edit */
+function edit(i){
+    let newText=prompt("Edit Task:",tasks[i].text);
+    if(newText){
+        tasks[i].text=newText;
+        localStorage.setItem('tasks',JSON.stringify(tasks));
+        render(searchInput.value);
+    }
+}
+
+/* Toggle Done */
+function toggle(i){
+    tasks[i].done=!tasks[i].done;
+    localStorage.setItem('tasks',JSON.stringify(tasks));
+    render(searchInput.value);
+}
+
+render();
+</script>
+
+</body>
+</html>
